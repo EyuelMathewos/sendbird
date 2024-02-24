@@ -26,6 +26,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData.dark(
+        useMaterial3: true,
+      ),
       home: OpenChannelPage(),
     );
   }
@@ -36,8 +39,8 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Flutter Main Page'),
-      ),
+          // title: Text(''),
+          ),
       body: Center(
         child: Text(
           'Welcome!',

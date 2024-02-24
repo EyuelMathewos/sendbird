@@ -140,8 +140,11 @@ class OpenChannelPageState extends State<OpenChannelPage> {
       itemCount: messageList.length,
       itemBuilder: (BuildContext context, int index) {
         if (index >= messageList.length) return Container();
-
         BaseMessage message = messageList[index];
+        print({
+          "user": message.sender?.userId,
+          messageList: message.toJson(),
+        });
 
         return GestureDetector(
           onDoubleTap: () async {
@@ -193,7 +196,9 @@ class OpenChannelPageState extends State<OpenChannelPage> {
                     ),
                     Container(
                       margin: const EdgeInsets.only(left: 16),
-                      alignment: Alignment.centerRight,
+                      alignment: message.sender?.userId == "Eyuel"
+                          ? Alignment.centerRight
+                          : Alignment.centerLeft,
                       child: Text(
                         DateTime.fromMillisecondsSinceEpoch(message.createdAt)
                             .toString(),
@@ -202,6 +207,49 @@ class OpenChannelPageState extends State<OpenChannelPage> {
                     ),
                   ],
                 ),
+              ),
+              Row(
+                mainAxisAlignment: message.sender?.userId == "Eyuel"
+                    ? MainAxisAlignment.end
+                    : MainAxisAlignment.start,
+                children: [
+                  Container(
+                    alignment: message.sender?.userId == "Eyuel"
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
+                    child: Column(children: [
+                      Text(
+                        message.message,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Widgets.imageNetwork(message.sender?.profileUrl, 16.0,
+                          Icons.account_circle),
+                      // Expanded(
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4.0),
+                        child: Text(
+                          message.sender?.userId ?? '',
+                          style: const TextStyle(fontSize: 12.0),
+                        ),
+                      ),
+                      // ),
+                      Container(
+                        margin: const EdgeInsets.only(left: 16),
+                        alignment: message.sender?.userId == "Eyuel"
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft,
+                        child: Text(
+                          DateTime.fromMillisecondsSinceEpoch(message.createdAt)
+                              .toString(),
+                          style: const TextStyle(fontSize: 12.0),
+                        ),
+                      ),
+                    ]),
+                  )
+                ],
               ),
               const Divider(height: 1),
             ],
