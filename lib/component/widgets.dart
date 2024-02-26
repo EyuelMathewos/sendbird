@@ -44,10 +44,13 @@ class Widgets {
     return TextField(
       controller: controller,
       decoration: InputDecoration(
-        enabledBorder: const OutlineInputBorder(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(40),
           borderSide: BorderSide(color: Colors.purple),
         ),
         labelText: labelText,
+        floatingLabelBehavior: FloatingLabelBehavior.never,
+        contentPadding: EdgeInsets.only(left: 24),
       ),
       maxLines: maxLines ?? 1,
       focusNode: focusNode,
@@ -71,6 +74,32 @@ class Widgets {
         contentPadding: const EdgeInsets.all(8.0),
       ),
       onChanged: onChanged,
+    );
+  }
+}
+
+class StatusWidget extends StatelessWidget {
+  final bool isOnline;
+
+  StatusWidget({required this.isOnline});
+
+  @override
+  Widget build(BuildContext context) {
+    Color circleColor;
+
+    if (isOnline) {
+      circleColor = Colors.blue;
+    } else {
+      circleColor = Colors.grey;
+    }
+
+    return Container(
+      width: 6,
+      height: 6,
+      decoration: BoxDecoration(
+        color: circleColor,
+        shape: BoxShape.circle,
+      ),
     );
   }
 }

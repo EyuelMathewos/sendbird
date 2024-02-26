@@ -172,86 +172,74 @@ class OpenChannelPageState extends State<OpenChannelPage> {
           },
           child: Column(
             children: [
-              ListTile(
-                title: Text(
-                  message.message,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                subtitle: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Widgets.imageNetwork(
-                        message.sender?.profileUrl, 16.0, Icons.account_circle),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 4.0),
-                        child: Text(
-                          message.sender?.userId ?? '',
-                          style: const TextStyle(fontSize: 12.0),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(left: 16),
-                      alignment: message.sender?.userId == "Eyuel"
-                          ? Alignment.centerRight
-                          : Alignment.centerLeft,
-                      child: Text(
-                        DateTime.fromMillisecondsSinceEpoch(message.createdAt)
-                            .toString(),
-                        style: const TextStyle(fontSize: 12.0),
-                      ),
-                    ),
-                  ],
-                ),
+              SizedBox(
+                height: 10,
+                width: 100,
               ),
               Row(
                 mainAxisAlignment: message.sender?.userId == "Eyuel"
                     ? MainAxisAlignment.end
                     : MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  message.sender?.userId != "Eyuel"
+                      ? Widgets.imageNetwork(message.sender?.profileUrl, 24.0,
+                          Icons.account_circle)
+                      : Container(),
                   Container(
-                    alignment: message.sender?.userId == "Eyuel"
-                        ? Alignment.centerRight
-                        : Alignment.centerLeft,
-                    child: Column(children: [
-                      Text(
-                        message.message,
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    decoration: BoxDecoration(
+                      color: message.sender?.userId == "Eyuel"
+                          ? Colors.pink
+                          : Colors.black54,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        bottomLeft: Radius.circular(10),
+                        bottomRight: Radius.circular(10),
                       ),
-                      Widgets.imageNetwork(message.sender?.profileUrl, 16.0,
-                          Icons.account_circle),
-                      // Expanded(
-                      Padding(
-                        padding: const EdgeInsets.only(left: 4.0),
-                        child: Text(
-                          message.sender?.userId ?? '',
-                          style: const TextStyle(fontSize: 12.0),
-                        ),
-                      ),
-                      // ),
-                      Container(
-                        margin: const EdgeInsets.only(left: 16),
-                        alignment: message.sender?.userId == "Eyuel"
-                            ? Alignment.centerRight
-                            : Alignment.centerLeft,
-                        child: Text(
-                          DateTime.fromMillisecondsSinceEpoch(message.createdAt)
-                              .toString(),
-                          style: const TextStyle(fontSize: 12.0),
-                        ),
-                      ),
-                    ]),
+                    ),
+                    margin: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(8),
+                    constraints: const BoxConstraints(
+                      minWidth: 120,
+                    ),
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          message.sender?.userId != "Eyuel"
+                              ? Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      message.sender?.userId ?? '',
+                                      style: TextStyle(fontSize: 10),
+                                    ),
+                                    SizedBox(
+                                      width: 2,
+                                    ),
+                                    StatusWidget(
+                                        isOnline:
+                                            message.sender!.isActive as bool),
+                                  ],
+                                )
+                              : Container(),
+                          message.sender?.userId != "Eyuel"
+                              ? SizedBox(
+                                  height: 10,
+                                )
+                              : Container(),
+                          Text(
+                            message.message,
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ]),
                   )
                 ],
               ),
-              const Divider(height: 1),
+              // Divider(height: 1),
             ],
           ),
         );
@@ -261,36 +249,68 @@ class OpenChannelPageState extends State<OpenChannelPage> {
 
   Widget _messageSender() {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: EdgeInsets.all(8.0),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          InkWell(
+            onTap: () => {},
+            child: Container(
+              padding: EdgeInsets.all(8),
+              child: Icon(
+                Icons.add,
+                color: Colors.grey,
+              ),
+            ),
+          ),
           Expanded(
-            child: Widgets.textField(textEditingController, 'Message'),
-          ),
-          const SizedBox(width: 8.0),
-          ElevatedButton(
-            onPressed: () async {
-              if (textEditingController.value.text.isEmpty) {
-                return;
-              }
-
-              openChannel?.sendUserMessage(
-                UserMessageCreateParams(
-                  message: textEditingController.value.text,
+            child: TextField(
+              controller: textEditingController,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(40),
+                  borderSide: BorderSide(color: Colors.grey),
                 ),
-                handler: (UserMessage message, SendbirdException? e) async {
-                  if (e != null) {
-                    await _showDialogToResendUserMessage(message);
-                  } else {
-                    _addMessage(message);
-                  }
-                },
-              );
+                labelText: "message",
+                floatingLabelBehavior: FloatingLabelBehavior.never,
+                contentPadding: EdgeInsets.only(left: 24),
+                suffixIcon: InkWell(
+                  onTap: () async {
+                    if (textEditingController.value.text.isEmpty) {
+                      return;
+                    }
 
-              textEditingController.clear();
-            },
-            child: const Text('Send'),
+                    openChannel?.sendUserMessage(
+                      UserMessageCreateParams(
+                        message: textEditingController.value.text,
+                      ),
+                      handler:
+                          (UserMessage message, SendbirdException? e) async {
+                        if (e != null) {
+                          await _showDialogToResendUserMessage(message);
+                        } else {
+                          _addMessage(message);
+                        }
+                      },
+                    );
+
+                    textEditingController.clear();
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(8),
+                    child: CircleAvatar(
+                        backgroundColor: Colors.pink,
+                        child: Icon(
+                          Icons.arrow_upward,
+                          color: Colors.black,
+                        )),
+                  ),
+                ),
+              ),
+              maxLines: 1,
+            ),
           ),
+          SizedBox(width: 8.0),
         ],
       ),
     );
